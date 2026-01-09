@@ -37,7 +37,7 @@ export function useCreateService() {
         .single()
 
       if (error) throw error
-      return data
+      return data as Service
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['services'] })
@@ -58,7 +58,7 @@ export function useUpdateService() {
         .single()
 
       if (error) throw error
-      return data
+      return data as Service
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['services'] })

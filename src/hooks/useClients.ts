@@ -34,11 +34,11 @@ export function useClients() {
         .select('client_id')
 
       const countsMap = new Map<string, number>()
-      petCounts?.forEach((pet) => {
+      petCounts?.forEach((pet: any) => {
         countsMap.set(pet.client_id, (countsMap.get(pet.client_id) || 0) + 1)
       })
 
-      return clients.map((client) => ({
+      return clients.map((client: any) => ({
         ...client,
         petCount: countsMap.get(client.id) || 0,
       })) as Client[]
@@ -75,7 +75,7 @@ export function useCreateClient() {
         .single()
 
       if (error) throw error
-      return data
+      return data as Client
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['clients'] })
@@ -96,7 +96,7 @@ export function useUpdateClient() {
         .single()
 
       if (error) throw error
-      return data
+      return data as Client
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['clients'] })

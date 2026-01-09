@@ -18,9 +18,6 @@ export function ClientsView() {
       <ClientDetailsView
         client={selectedClient}
         onBack={() => setSelectedClient(null)}
-        onEdit={() => {
-          // Edit is handled within ClientDetailsView
-        }}
       />
     )
   }
