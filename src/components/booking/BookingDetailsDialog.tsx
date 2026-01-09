@@ -6,8 +6,9 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { ChevronRight, X } from 'lucide-react'
-import { useAppointments } from '@/hooks/useAppointments'
+import { ChevronRight } from 'lucide-react'
+import { useAppointments, useUpdateAppointment } from '@/hooks/useAppointments'
+import { useToast } from '@/hooks/use-toast'
 import { formatInSydney } from '@/lib/timezone'
 import { format, differenceInMinutes } from 'date-fns'
 
@@ -29,6 +30,9 @@ export function BookingDetailsDialog({
   const { data: allAppointments = [] } = useAppointments()
   const appointment = allAppointments.find((apt) => apt.id === appointmentId)
   const [showCancelConfirm, setShowCancelConfirm] = useState(false)
+  const [isCancelling, setIsCancelling] = useState(false)
+  const updateAppointment = useUpdateAppointment()
+  const { toast } = useToast()
 
   if (!appointment) return null
 
@@ -64,15 +68,7 @@ export function BookingDetailsDialog({
       <DialogContent className="w-[calc(100%-2rem)] max-w-md p-0 gap-0">
         {/* Header */}
         <DialogHeader className="px-6 py-4 border-b border-gray-200">
-          <div className="flex items-center justify-between">
-            <DialogTitle className="text-xl font-semibold">Booking Details</DialogTitle>
-            <button
-              onClick={() => onOpenChange(false)}
-              className="h-8 w-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors"
-            >
-              <X className="h-5 w-5 text-gray-500" />
-            </button>
-          </div>
+          <DialogTitle className="text-xl font-semibold">Booking Details</DialogTitle>
         </DialogHeader>
 
         {/* Content */}
@@ -201,15 +197,32 @@ export function BookingDetailsDialog({
                 </Button>
                 <Button
                   variant="destructive"
-                  onClick={() => {
-                    // TODO: Implement cancel logic
-                    console.log('Cancel confirmed:', appointmentId)
-                    setShowCancelConfirm(false)
-                    onOpenChange(false)
+                  onClick={async () => {
+                    setIsCancelling(true)
+                    try {
+                      await updateAppointment.mutateAsync({
+                        id: appointmentId,
+                        status: 'cancelled',
+                      })
+                      toast({
+                        title: 'Booking Cancelled',
+                        description: 'The appointment has been cancelled successfully.',
+                      })
+                      setShowCancelConfirm(false)
+                      onOpenChange(false)
+                    } catch (error) {
+                      console.error('Failed to cancel booking:', error)
+                      toast({
+                        title: 'Error',
+                        description: 'Failed to cancel booking. Please try again.',
+                      })
+                      setIsCancelling(false)
+                    }
                   }}
+                  disabled={isCancelling}
                   className="flex-1"
                 >
-                  Yes, cancel
+                  {isCancelling ? 'Cancelling...' : 'Yes, cancel'}
                 </Button>
               </div>
             </div>
