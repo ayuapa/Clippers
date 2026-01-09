@@ -30,9 +30,10 @@ export function useCreateService() {
 
   return useMutation({
     mutationFn: async (service: Omit<Service, 'id'>) => {
+      // @ts-expect-error - Supabase generated types are too strict
       const { data, error } = await supabase
         .from('services')
-        .insert([service as any])
+        .insert([service])
         .select()
         .single()
 
@@ -50,9 +51,10 @@ export function useUpdateService() {
 
   return useMutation({
     mutationFn: async ({ id, ...updates }: Partial<Service> & { id: string }) => {
+      // @ts-expect-error - Supabase generated types are too strict
       const { data, error } = await supabase
         .from('services')
-        .update(updates as any)
+        .update(updates)
         .eq('id', id)
         .select()
         .single()
