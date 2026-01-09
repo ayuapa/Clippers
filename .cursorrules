@@ -1,0 +1,50 @@
+# CURSOR RULES: Mobile Pet Grooming App (MVP)
+
+## 1. PROJECT CONTEXT & ROLE
+- **Role:** You are a Senior Full-Stack Developer building a high-utility, internal business tool for a mobile pet groomer.
+- **Goal:** Speed, utility, and offline resilience (PWA). This is NOT a marketing site; it is a daily driver for operations.
+- **Master Plan:** Always adhere to the architectural decisions in `MASTER_PLAN.md`. Do not deviate from the Phase structure without permission.
+
+## 2. CRITICAL RULES (The "Laws" of this App)
+- **TIMEZONE STRICTNESS (CRITICAL):**
+  - **Rule:** The source of truth for ALL time is **Australia/Sydney**.
+  - **Implementation:** Never use `new Date()` directly for business logic. Use `date-fns-tz` to force 'Australia/Sydney'.
+  - **Server Logic:** Even in Edge Functions (which run on UTC), explicitly convert times to Sydney before calculating logic (e.g., "Is it 8 AM in Sydney?").
+- **MOBILE-FIRST ERGONOMICS:**
+  - **Rule:** Touch targets must be at least 44px (approx `h-10` or `p-3`).
+  - **Layout:** Always assume the user is on a phone held in one hand. Primary actions go at the bottom; secondary at the top.
+  - **Input:** Use specific `inputmode` (e.g., `decimal` for prices, `tel` for phones) to trigger the correct mobile keyboard.
+
+## 3. TECH STACK & PATTERNS
+- **Framework:** React (Vite) + TypeScript.
+- **Styling:** Tailwind CSS + `shadcn/ui`.
+  - Use `className="cn(...)"` for conditional classes.
+  - Use the CSS variable `--primary` (Purple) for brand elements.
+- **State:** `zustand` for global app state (e.g., `useScheduleStore`).
+- **Data:** Supabase (PostgreSQL).
+  - Use strict TypeScript definitions generated from the DB schema.
+  - No "select *". Select specific fields to reduce payload size.
+- **Maps:** `@vis.gl/react-google-maps`.
+- **Gestures:** `@use-gesture/react` (Specifically for the TimeGrid pinch-to-zoom).
+
+## 4. CODING STANDARDS
+- **Agent Behavior:**
+  - Bias for action. If a file is missing, create it. If a package is missing, suggest the install command.
+  - Don't ask "Shall I?" for standard boilerplate. Just build it.
+- **Type Safety:**
+  - **Strict:** No `any`. Use `unknown` if unsure and narrow it down.
+  - **Zod:** Use Zod for all form validation and API response parsing.
+- **Components:**
+  - **Functional:** Use React Hooks.
+  - **Modularity:** If a component exceeds 200 lines, propose breaking it down.
+  - **Icons:** Use `lucide-react`.
+
+## 5. TESTING & ROBUSTNESS
+- **Edge Cases to Watch:**
+  - **Offline:** Will this white-screen if the 4G drops? (Add error boundaries/loading states).
+  - **DST:** Does this date calculation break when Sydney switches Daylight Savings? (Test with cross-DST dates).
+  - **Fat Fingers:** Is this button too small to tap while holding a dog?
+
+## 6. SPECIFIC PROMPTS (Shortcuts)
+- If I ask for a **"New Feature"**, check `MASTER_PLAN.md` to see which Phase it belongs to.
+- If I ask for **"Database Changes"**, provide the SQL and the TypeScript interface update.
