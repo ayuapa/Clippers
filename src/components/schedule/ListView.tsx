@@ -15,7 +15,8 @@ export function ListView({ selectedDate, filterType, onAppointmentClick }: ListV
 
   // Filter appointments based on filterType
   const appointments = useMemo(() => {
-    let filtered = allAppointments
+    // Always exclude cancelled appointments from all views
+    let filtered = allAppointments.filter(apt => apt.status !== 'cancelled')
     
     if (filterType === 'confirmed') {
       filtered = filtered.filter(apt => apt.status === 'scheduled')

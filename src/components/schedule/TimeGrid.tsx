@@ -59,7 +59,8 @@ export function TimeGrid({ selectedDate, filterType = 'all', onTimeSlotClick }: 
   // Filter appointments based on filterType
   const appointments = useMemo(() => {
     if (filterType === 'all') {
-      return allAppointments
+      // Exclude cancelled appointments from "All" view
+      return allAppointments.filter(apt => apt.status !== 'cancelled')
     }
     if (filterType === 'confirmed') {
       // Show appointments that are scheduled (not completed)

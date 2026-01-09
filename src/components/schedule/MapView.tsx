@@ -18,12 +18,15 @@ export function MapView({ selectedDate, filterType }: MapViewProps) {
 
   // Filter appointments based on filterType
   const filteredAppointments = useMemo(() => {
+    // Always exclude cancelled appointments from all views
+    const active = allAppointments.filter(apt => apt.status !== 'cancelled')
+    
     if (filterType === 'confirmed') {
-      return allAppointments.filter(apt => apt.status === 'scheduled') // scheduled = confirmed
+      return active.filter(apt => apt.status === 'scheduled') // scheduled = confirmed
     } else if (filterType === 'completed') {
-      return allAppointments.filter(apt => apt.status === 'completed')
+      return active.filter(apt => apt.status === 'completed')
     }
-    return allAppointments
+    return active
   }, [allAppointments, filterType])
 
   // Transform appointments for map display (only include those with location data)
