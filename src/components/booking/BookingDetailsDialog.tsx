@@ -51,9 +51,13 @@ export function BookingDetailsDialog({
     ? appointment.appointment_pets
     : []
 
+  // Calculate total from appointment_pets if total_price not available
+  const calculatedTotal = appointmentPets.reduce((sum, item: any) => sum + (item.price || 0), 0)
+  const totalPrice = calculatedTotal || 0
+  
   // Calculate GST (assuming it's included in the total)
-  const totalWithoutGst = appointment.total_price / 1.1
-  const gst = appointment.total_price - totalWithoutGst
+  const totalWithoutGst = totalPrice / 1.1
+  const gst = totalPrice - totalWithoutGst
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -105,19 +109,24 @@ export function BookingDetailsDialog({
           <div>
             <h3 className="text-sm font-medium text-gray-500 mb-3">Pets, Services & Items</h3>
             <div className="space-y-3">
+              {appointmentPets.length === 0 && (
+                <div className="text-sm text-gray-500 italic py-2">
+                  No pets/services data available
+                </div>
+              )}
               {appointmentPets.map((item: any, index: number) => (
                 <div key={index} className="flex items-start gap-3">
                   <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
                     <span className="text-xs font-bold text-primary">🐕</span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-base font-medium text-gray-900">{item.pet_name}</p>
+                    <p className="text-base font-medium text-gray-900">{item.pet_name || 'Unknown'}</p>
                     <p className="text-sm text-gray-600">
-                      {item.service_name} ({item.duration_minutes}min)
+                      {item.service_name || 'Unknown'} ({item.duration_minutes || 0}min)
                     </p>
                   </div>
                   <div className="text-base font-semibold text-gray-900">
-                    ${item.price.toFixed(0)}
+                    ${(item.price || 0).toFixed(0)}
                   </div>
                 </div>
               ))}
@@ -137,7 +146,7 @@ export function BookingDetailsDialog({
               <div className="flex items-center justify-between px-3 pt-2">
                 <span className="text-xl font-bold text-gray-900">TOTAL</span>
                 <span className="text-xl font-bold text-gray-900">
-                  ${appointment.total_price.toFixed(0)}
+                  ${totalPrice.toFixed(0)}
                 </span>
               </div>
             </div>
