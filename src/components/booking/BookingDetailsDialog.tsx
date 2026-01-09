@@ -120,9 +120,9 @@ export function BookingDetailsDialog({
                     <span className="text-xs font-bold text-primary">🐕</span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-base font-medium text-gray-900">{item.pet_name || 'Unknown'}</p>
+                    <p className="text-base font-medium text-gray-900">{item.pets?.name || 'Unknown'}</p>
                     <p className="text-sm text-gray-600">
-                      {item.service_name || 'Unknown'} ({item.duration_minutes || 0}min)
+                      {item.services?.name || 'Unknown'} ({item.services?.duration_minutes || 0}min)
                     </p>
                   </div>
                   <div className="text-base font-semibold text-gray-900">
