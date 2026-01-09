@@ -5,6 +5,7 @@ import { TimeGrid } from './TimeGrid'
 import { MapView } from './MapView'
 import { ListView } from './ListView'
 import { BookingDialog } from '@/components/booking/BookingDialog'
+import { BookingDetailsDialog } from '@/components/booking/BookingDetailsDialog'
 import { WeekDatePicker } from '@/components/booking/WeekDatePicker'
 import { cn } from '@/lib/utils'
 
@@ -20,6 +21,7 @@ export function ScheduleView() {
   const [selectedTime, setSelectedTime] = useState<string | undefined>(undefined)
   const [showFilterDropdown, setShowFilterDropdown] = useState(false)
   const [showViewDropdown, setShowViewDropdown] = useState(false)
+  const [selectedAppointmentId, setSelectedAppointmentId] = useState<string | null>(null)
   
   const segmentedControlRef = useRef<HTMLDivElement>(null)
 
@@ -292,6 +294,7 @@ export function ScheduleView() {
           <ListView 
             selectedDate={selectedDate}
             filterType={filterType}
+            onAppointmentClick={(id) => setSelectedAppointmentId(id)}
           />
         )}
       </div>
@@ -309,6 +312,15 @@ export function ScheduleView() {
         defaultDate={bookingDate || selectedDate}
         defaultTime={selectedTime}
       />
+
+      {/* Booking Details Dialog */}
+      {selectedAppointmentId && (
+        <BookingDetailsDialog
+          open={!!selectedAppointmentId}
+          onOpenChange={(open) => !open && setSelectedAppointmentId(null)}
+          appointmentId={selectedAppointmentId}
+        />
+      )}
     </div>
   )
 }

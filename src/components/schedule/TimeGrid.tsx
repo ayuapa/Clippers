@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState, useMemo } from 'react'
 import { usePinch } from '@use-gesture/react'
 import { useAppointments, useUpdateAppointment } from '@/hooks/useAppointments'
-import { PaymentDialog } from '@/components/payment/PaymentDialog'
+import { BookingDetailsDialog } from '@/components/booking/BookingDetailsDialog'
 
 type FilterType = 'all' | 'confirmed' | 'completed'
 
@@ -835,15 +835,12 @@ export function TimeGrid({ selectedDate, filterType = 'all', onTimeSlotClick }: 
         </div>
       )}
 
-      {/* Payment Dialog */}
+      {/* Booking Details Dialog */}
       {selectedApt && (
-        <PaymentDialog
+        <BookingDetailsDialog
           open={!!selectedAppointment}
           onOpenChange={(open) => !open && setSelectedAppointment(null)}
           appointmentId={selectedApt.id}
-          clientName={selectedApt.client_name}
-          serviceName={selectedApt.service_name}
-          amount={selectedApt.price}
         />
       )}
 
