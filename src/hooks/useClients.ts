@@ -70,7 +70,7 @@ export function useCreateClient() {
     mutationFn: async (client: Omit<Client, 'id' | 'petCount'>) => {
       const { data, error } = await supabase
         .from('clients')
-        .insert([client])
+        .insert([client as any])
         .select()
         .single()
 
@@ -90,7 +90,7 @@ export function useUpdateClient() {
     mutationFn: async ({ id, ...updates }: Partial<Client> & { id: string }) => {
       const { data, error } = await supabase
         .from('clients')
-        .update(updates)
+        .update(updates as any)
         .eq('id', id)
         .select()
         .single()
@@ -112,7 +112,7 @@ export function useSoftDeleteClient() {
       // 1. Soft delete the client (set is_active to false)
       const { error: clientError } = await supabase
         .from('clients')
-        .update({ is_active: false })
+        .update({ is_active: false } as any)
         .eq('id', clientId)
 
       if (clientError) throw clientError

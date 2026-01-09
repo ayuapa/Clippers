@@ -39,12 +39,12 @@ export function useCreatePet() {
     mutationFn: async (pet: Omit<Pet, 'id'>) => {
       const { data, error } = await supabase
         .from('pets')
-        .insert([pet])
+        .insert([pet as any])
         .select()
         .single()
 
       if (error) throw error
-      return data
+      return data as Pet
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['pets'] })
@@ -61,13 +61,13 @@ export function useUpdatePet() {
     mutationFn: async ({ id, ...updates }: Partial<Pet> & { id: string }) => {
       const { data, error} = await supabase
         .from('pets')
-        .update(updates)
+        .update(updates as any)
         .eq('id', id)
         .select()
         .single()
 
       if (error) throw error
-      return data
+      return data as Pet
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['pets'] })

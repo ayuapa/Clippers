@@ -1,5 +1,5 @@
-import { formatInTimeZone, toZonedTime, fromZonedTime } from 'date-fns-tz'
-import { format as formatDate, parse, startOfDay, endOfDay, addDays } from 'date-fns'
+import { formatInTimeZone, utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz'
+import { parse, startOfDay, endOfDay, addDays } from 'date-fns'
 
 /**
  * TIMEZONE STRICTNESS (CRITICAL)
@@ -13,7 +13,7 @@ export const APP_TIMEZONE = 'Australia/Sydney'
  * Get the current date/time in Sydney timezone
  */
 export function nowInSydney(): Date {
-  return toZonedTime(new Date(), APP_TIMEZONE)
+  return utcToZonedTime(new Date(), APP_TIMEZONE)
 }
 
 /**
@@ -27,14 +27,14 @@ export function formatInSydney(date: Date, formatStr: string): string {
  * Convert a date to Sydney timezone (for display/calculations)
  */
 export function toSydneyTime(date: Date): Date {
-  return toZonedTime(date, APP_TIMEZONE)
+  return utcToZonedTime(date, APP_TIMEZONE)
 }
 
 /**
  * Convert a Sydney local time to UTC (for storing in DB)
  */
 export function fromSydneyTime(date: Date): Date {
-  return fromZonedTime(date, APP_TIMEZONE)
+  return zonedTimeToUtc(date, APP_TIMEZONE)
 }
 
 /**

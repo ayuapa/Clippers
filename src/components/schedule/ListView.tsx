@@ -1,7 +1,7 @@
 import { useAppointments } from '@/hooks/useAppointments'
 import { useMemo } from 'react'
 import { formatInTimeZone } from 'date-fns-tz'
-import { Clock, User, Dog, Scissors, MapPin, DollarSign } from 'lucide-react'
+import { Clock, User, Dog, Scissors, DollarSign } from 'lucide-react'
 import { format } from 'date-fns'
 
 interface ListViewProps {

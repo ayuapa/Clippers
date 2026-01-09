@@ -214,6 +214,7 @@ export function ClientDialog({
         latitude: formData.latitude ? parseFloat(formData.latitude) : null,
         longitude: formData.longitude ? parseFloat(formData.longitude) : null,
         notes: formData.notes || null,
+        is_active: true,
       }
 
       if (mode === 'create') {
@@ -257,7 +258,6 @@ export function ClientDialog({
       toast({
         title: 'Error',
         description: 'Failed to save client. Please try again.',
-        variant: 'destructive',
       })
     }
   }

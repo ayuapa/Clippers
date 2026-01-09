@@ -24,10 +24,9 @@ import type { Client } from '@/hooks/useClients'
 interface ClientDetailsViewProps {
   client: Client
   onBack: () => void
-  onEdit: () => void
 }
 
-export function ClientDetailsView({ client, onBack, onEdit }: ClientDetailsViewProps) {
+export function ClientDetailsView({ client, onBack }: ClientDetailsViewProps) {
   const [isPetDialogOpen, setIsPetDialogOpen] = useState(false)
   const [isEditClientOpen, setIsEditClientOpen] = useState(false)
   const [historyView, setHistoryView] = useState<'upcoming' | 'previous'>('upcoming')
@@ -94,7 +93,6 @@ export function ClientDetailsView({ client, onBack, onEdit }: ClientDetailsViewP
       toast({
         title: 'Error',
         description: 'Failed to deactivate client. Please try again.',
-        variant: 'destructive',
       })
     }
   }
@@ -113,7 +111,6 @@ export function ClientDetailsView({ client, onBack, onEdit }: ClientDetailsViewP
       toast({
         title: 'Error',
         description: 'Failed to delete client. Please try again.',
-        variant: 'destructive',
       })
     }
   }

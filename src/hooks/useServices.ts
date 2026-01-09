@@ -32,7 +32,7 @@ export function useCreateService() {
     mutationFn: async (service: Omit<Service, 'id'>) => {
       const { data, error } = await supabase
         .from('services')
-        .insert([service])
+        .insert([service as any])
         .select()
         .single()
 
@@ -52,7 +52,7 @@ export function useUpdateService() {
     mutationFn: async ({ id, ...updates }: Partial<Service> & { id: string }) => {
       const { data, error } = await supabase
         .from('services')
-        .update(updates)
+        .update(updates as any)
         .eq('id', id)
         .select()
         .single()
