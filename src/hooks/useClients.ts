@@ -68,9 +68,9 @@ export function useCreateClient() {
 
   return useMutation({
     mutationFn: async (client: Omit<Client, 'id' | 'petCount'>) => {
-      // @ts-expect-error - Supabase generated types are too strict
       const { data, error } = await supabase
         .from('clients')
+        // @ts-expect-error - Supabase generated types are too strict
         .insert([client])
         .select()
         .single()
@@ -89,9 +89,9 @@ export function useUpdateClient() {
 
   return useMutation({
     mutationFn: async ({ id, ...updates }: Partial<Client> & { id: string }) => {
-      // @ts-expect-error - Supabase generated types are too strict
       const { data, error } = await supabase
         .from('clients')
+        // @ts-expect-error - Supabase generated types are too strict
         .update(updates)
         .eq('id', id)
         .select()
@@ -112,9 +112,9 @@ export function useSoftDeleteClient() {
   return useMutation({
     mutationFn: async (clientId: string) => {
       // 1. Soft delete the client (set is_active to false)
-      // @ts-expect-error - Supabase generated types are too strict
       const { error: clientError } = await supabase
         .from('clients')
+        // @ts-expect-error - Supabase generated types are too strict
         .update({ is_active: false })
         .eq('id', clientId)
 

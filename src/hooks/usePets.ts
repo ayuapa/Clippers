@@ -37,9 +37,9 @@ export function useCreatePet() {
 
   return useMutation({
     mutationFn: async (pet: Omit<Pet, 'id'>) => {
-      // @ts-expect-error - Supabase generated types are too strict
       const { data, error } = await supabase
         .from('pets')
+        // @ts-expect-error - Supabase generated types are too strict
         .insert([pet])
         .select()
         .single()
@@ -60,9 +60,9 @@ export function useUpdatePet() {
 
   return useMutation({
     mutationFn: async ({ id, ...updates }: Partial<Pet> & { id: string }) => {
-      // @ts-expect-error - Supabase generated types are too strict
       const { data, error} = await supabase
         .from('pets')
+        // @ts-expect-error - Supabase generated types are too strict
         .update(updates)
         .eq('id', id)
         .select()
