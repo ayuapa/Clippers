@@ -10,7 +10,7 @@ import { ChevronRight } from 'lucide-react'
 import { useAppointments, useUpdateAppointment } from '@/hooks/useAppointments'
 import { useToast } from '@/hooks/use-toast'
 import { formatInSydney } from '@/lib/timezone'
-import { format, differenceInMinutes } from 'date-fns'
+import { differenceInMinutes } from 'date-fns'
 
 interface BookingDetailsDialogProps {
   open: boolean
