@@ -112,7 +112,9 @@ export function BookingDetailsDialog({
     : appointment.client_name
 
   // Parse appointment_pets (use edited if in edit mode)
-  const displayPets = isEditing && editedPetServices.length > 0
+  // IMPORTANT: When editing, ALWAYS use editedPetServices, even if empty
+  // Don't fall back to original data after client change
+  const displayPets = isEditing
     ? editedPetServices
     : (Array.isArray(appointment.appointment_pets) ? appointment.appointment_pets : [])
 
@@ -126,6 +128,10 @@ export function BookingDetailsDialog({
   
   // Recalculate end time when services change in edit mode
   const handlePetServicesChange = (newPetServices: EditablePetService[]) => {
+    console.log('Pet services changed:', {
+      count: newPetServices.length,
+      services: newPetServices
+    })
     setEditedPetServices(newPetServices)
     
     // Recalculate duration and end time
@@ -136,8 +142,79 @@ export function BookingDetailsDialog({
     }
   }
 
-  // Save changes to database
-  const handleSaveChanges = async () => {
+// Check if there are any changes
+const hasChanges = () => {
+  if (!isEditing) {
+    console.log('hasChanges: not editing')
+    return false
+  }
+  
+  // Check time changes
+  const originalStart = new Date(appointment.start_time).getTime()
+  const originalEnd = new Date(appointment.end_time).getTime()
+  const newStart = editedStartTime?.getTime()
+  const newEnd = editedEndTime?.getTime()
+  
+  console.log('Time check:', {
+    originalStart: new Date(originalStart),
+    newStart: newStart ? new Date(newStart) : null,
+    originalEnd: new Date(originalEnd),
+    newEnd: newEnd ? new Date(newEnd) : null,
+    changed: newStart !== originalStart || newEnd !== originalEnd
+  })
+  
+  if (newStart && newEnd && (newStart !== originalStart || newEnd !== originalEnd)) {
+    console.log('hasChanges: time changed')
+    return true
+  }
+  
+  // Check client change
+  console.log('Client check:', {
+    original: appointment.client_id,
+    edited: editedClientId,
+    changed: editedClientId !== appointment.client_id
+  })
+  
+  if (editedClientId && editedClientId !== appointment.client_id) {
+    console.log('hasChanges: client changed')
+    return true
+  }
+  
+  // Check pet services changes
+  const originalPets = Array.isArray(appointment.appointment_pets)
+    ? appointment.appointment_pets
+    : []
+  
+  console.log('Pet services check:', {
+    originalCount: originalPets.length,
+    editedCount: editedPetServices.length
+  })
+  
+  // Different count = changed
+  if (editedPetServices.length !== originalPets.length) {
+    console.log('hasChanges: pet count changed')
+    return true
+  }
+  
+  // Check if any pet/service combination changed
+  for (const edited of editedPetServices) {
+    const match = originalPets.find((orig: any) => 
+      orig.pet_id === edited.pet_id && 
+      orig.service_id === edited.service_id &&
+      Math.abs((orig.price || 0) - (edited.price || 0)) < 0.01 // Use float comparison
+    )
+    if (!match) {
+      console.log('hasChanges: pet/service combination changed', edited)
+      return true
+    }
+  }
+  
+  console.log('hasChanges: no changes detected')
+  return false
+}
+
+// Save changes to database
+const handleSaveChanges = async () => {
     if (!editedStartTime || !editedEndTime || !editedClientId) {
       toast({
         title: 'Error',
@@ -455,8 +532,26 @@ export function BookingDetailsDialog({
               </Button>
               <Button
                 className="h-12 text-base font-semibold bg-primary hover:bg-primary/90"
-                onClick={() => setShowChangeSummary(true)}
-                disabled={editedPetServices.length === 0 || editedPetServices.some(ps => !ps.pet_id || !ps.service_id)}
+                onClick={() => {
+                  console.log('Save button clicked')
+                  console.log('editedPetServices:', editedPetServices)
+                  console.log('hasChanges():', hasChanges())
+                  setShowChangeSummary(true)
+                }}
+                disabled={(() => {
+                  const noPets = editedPetServices.length === 0
+                  const invalidPets = editedPetServices.some(ps => !ps.pet_id || !ps.service_id)
+                  const noChanges = !hasChanges()
+                  
+                  console.log('Save button disabled check:', {
+                    noPets,
+                    invalidPets,
+                    noChanges,
+                    disabled: noPets || invalidPets || noChanges
+                  })
+                  
+                  return noPets || invalidPets || noChanges
+                })()}
               >
                 Save
               </Button>
@@ -547,6 +642,12 @@ export function BookingDetailsDialog({
           initialStartTime={editedStartTime}
           initialEndTime={editedEndTime || endTime}
           onSave={(_date, startTime, endTime) => {
+            console.log('Date/time changed:', {
+              originalStart: appointment.start_time,
+              newStart: startTime,
+              originalEnd: appointment.end_time,
+              newEnd: endTime
+            })
             setEditedStartTime(startTime)
             setEditedEndTime(endTime)
             setShowDateTimeDialog(false)
@@ -561,8 +662,14 @@ export function BookingDetailsDialog({
           onOpenChange={setShowClientDialog}
           currentClientId={editedClientId || appointment.client_id}
           onClientSelect={(clientId) => {
+            console.log('Client selected:', {
+              clientId,
+              originalClientId: appointment.client_id,
+              currentEditedClientId: editedClientId,
+              isChanged: clientId !== appointment.client_id
+            })
             setEditedClientId(clientId)
-            // Clear pet services when client changes
+            // Clear pet services when client changes - user will need to add pets manually
             setEditedPetServices([])
             setShowClientDialog(false)
           }}
