@@ -1,15 +1,18 @@
 import { useState } from 'react'
-import { Settings, Scissors, DollarSign, Bell, HelpCircle, ChevronLeft } from 'lucide-react'
+import { Settings, Scissors, DollarSign, Bell, HelpCircle, ChevronLeft, Package, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ServicesView } from '@/components/services/ServicesView'
+import { ItemsView } from '@/components/items/ItemsView'
 
-type SubView = 'menu' | 'services' | 'payments' | 'notifications' | 'settings' | 'help'
+type SubView = 'menu' | 'services' | 'items' | 'payments' | 'notifications' | 'settings' | 'help'
 
 export function MoreView() {
   const [currentSubView, setCurrentSubView] = useState<SubView>('menu')
+  const [showAddDialog, setShowAddDialog] = useState(false)
 
   const menuItems = [
-    { id: 'services' as const, label: 'Services & Pricing', icon: Scissors },
+    { id: 'services' as const, label: 'Services', icon: Scissors },
+    { id: 'items' as const, label: 'Items & Discount', icon: Package },
     { id: 'payments' as const, label: 'Payment History', icon: DollarSign },
     { id: 'notifications' as const, label: 'Notifications', icon: Bell },
     { id: 'settings' as const, label: 'Settings', icon: Settings },
@@ -20,19 +23,65 @@ export function MoreView() {
   if (currentSubView === 'services') {
     return (
       <div className="flex flex-col h-full">
-        <div className="border-b border-gray-200 bg-white px-4 py-3 flex items-center gap-3">
-          <Button
-            size="icon"
-            variant="ghost"
-            onClick={() => setCurrentSubView('menu')}
-            className="h-10 w-10"
+        <div className="border-b border-gray-200 bg-white px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={() => setCurrentSubView('menu')}
+              className="h-10 w-10"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </Button>
+            <h1 className="text-xl font-bold">Services</h1>
+          </div>
+          <button
+            onClick={() => setShowAddDialog(true)}
+            className="h-10 w-10 flex items-center justify-center hover:bg-gray-100 rounded-lg transition-colors"
+            aria-label="Add service"
           >
-            <ChevronLeft className="h-5 w-5" />
-          </Button>
-          <h1 className="text-xl font-bold">Services & Pricing</h1>
+            <Plus className="h-6 w-6 text-primary" />
+          </button>
         </div>
         <div className="flex-1 overflow-hidden">
-          <ServicesView />
+          <ServicesView 
+            showAddDialog={showAddDialog}
+            onAddDialogChange={setShowAddDialog}
+          />
+        </div>
+      </div>
+    )
+  }
+
+  // Show the Items & Discount view
+  if (currentSubView === 'items') {
+    return (
+      <div className="flex flex-col h-full">
+        <div className="border-b border-gray-200 bg-white px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={() => setCurrentSubView('menu')}
+              className="h-10 w-10"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </Button>
+            <h1 className="text-xl font-bold">Items & Discount</h1>
+          </div>
+          <button
+            onClick={() => setShowAddDialog(true)}
+            className="h-10 w-10 flex items-center justify-center hover:bg-gray-100 rounded-lg transition-colors"
+            aria-label="Add item or discount"
+          >
+            <Plus className="h-6 w-6 text-primary" />
+          </button>
+        </div>
+        <div className="flex-1 overflow-hidden">
+          <ItemsView 
+            showAddDialog={showAddDialog}
+            onAddDialogChange={setShowAddDialog}
+          />
         </div>
       </div>
     )

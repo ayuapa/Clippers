@@ -18,17 +18,6 @@ interface ServiceDialogProps {
   service?: Service
 }
 
-const DEFAULT_COLORS = [
-  '#7c3aed', // Purple
-  '#ec4899', // Pink
-  '#3b82f6', // Blue
-  '#10b981', // Green
-  '#f59e0b', // Amber
-  '#ef4444', // Red
-  '#8b5cf6', // Violet
-  '#06b6d4', // Cyan
-]
-
 export function ServiceDialog({
   open,
   onOpenChange,
@@ -43,7 +32,6 @@ export function ServiceDialog({
     description: '',
     base_price: '',
     duration_minutes: '',
-    color: DEFAULT_COLORS[0],
   })
 
   useEffect(() => {
@@ -53,7 +41,6 @@ export function ServiceDialog({
         description: service.description || '',
         base_price: service.base_price.toString(),
         duration_minutes: service.duration_minutes.toString(),
-        color: service.color,
       })
     } else {
       setFormData({
@@ -61,7 +48,6 @@ export function ServiceDialog({
         description: '',
         base_price: '',
         duration_minutes: '',
-        color: DEFAULT_COLORS[0],
       })
     }
   }, [mode, service, open])
@@ -70,17 +56,24 @@ export function ServiceDialog({
     e.preventDefault()
     
     try {
-      const serviceData = {
-        name: formData.name,
-        description: formData.description || null,
-        base_price: parseFloat(formData.base_price),
-        duration_minutes: parseInt(formData.duration_minutes),
-        color: formData.color,
-      }
-
       if (mode === 'create') {
+        const serviceData = {
+          name: formData.name,
+          description: formData.description || null,
+          base_price: parseFloat(formData.base_price),
+          duration_minutes: parseInt(formData.duration_minutes),
+          icon: 'scissors', // Fixed icon for all services
+          is_active: true, // Set active by default for new services
+        }
         await createService.mutateAsync(serviceData)
       } else if (service) {
+        const serviceData = {
+          name: formData.name,
+          description: formData.description || null,
+          base_price: parseFloat(formData.base_price),
+          duration_minutes: parseInt(formData.duration_minutes),
+          icon: 'scissors', // Fixed icon for all services
+        }
         await updateService.mutateAsync({ id: service.id, ...serviceData })
       }
 
@@ -162,26 +155,6 @@ export function ServiceDialog({
                 placeholder="90"
                 required
               />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label>Color Tag</Label>
-            <div className="flex gap-2">
-              {DEFAULT_COLORS.map((color) => (
-                <button
-                  key={color}
-                  type="button"
-                  onClick={() => setFormData({ ...formData, color })}
-                  className={`h-10 w-10 rounded-full transition-all ${
-                    formData.color === color
-                      ? 'ring-2 ring-offset-2 ring-gray-900'
-                      : 'hover:scale-110'
-                  }`}
-                  style={{ backgroundColor: color }}
-                  aria-label={`Select color ${color}`}
-                />
-              ))}
             </div>
           </div>
 

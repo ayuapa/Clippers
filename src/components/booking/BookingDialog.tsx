@@ -323,7 +323,7 @@ export function BookingDialog({
                               <SelectValue placeholder="Select a service" />
                             </SelectTrigger>
                             <SelectContent>
-                              {services.map((service) => (
+                              {services.filter(s => s.is_active).map((service) => (
                                 <SelectItem key={service.id} value={service.id}>
                                   {service.name} ({service.duration_minutes} min - ${service.base_price})
                                 </SelectItem>

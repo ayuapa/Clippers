@@ -7,7 +7,9 @@ export interface Service {
   description: string | null
   base_price: number
   duration_minutes: number
-  color: string
+  icon: string
+  color?: string | null // Keep for backward compatibility
+  is_active: boolean
 }
 
 export function useServices() {
@@ -68,3 +70,42 @@ export function useUpdateService() {
   })
 }
 
+export function useToggleServiceActive() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async ({ id, is_active }: { id: string; is_active: boolean }) => {
+      const { data, error } = await supabase
+        .from('services')
+        // @ts-expect-error - Supabase generated types are too strict
+        .update({ is_active })
+        .eq('id', id)
+        .select()
+        .single()
+
+      if (error) throw error
+      return data as Service
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['services'] })
+    },
+  })
+}
+
+export function useDeleteService() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('services')
+        .delete()
+        .eq('id', id)
+
+      if (error) throw error
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['services'] })
+    },
+  })
+}
